@@ -1,5 +1,3 @@
-// src/controllers/inferenceController.js
-
 import { Image } from "../models/imageModel.js";
 import { asyncHandler, ApiError, ApiResponse } from "../utils/utils.js";
 import { addInferenceJob } from "../config/queue.js";

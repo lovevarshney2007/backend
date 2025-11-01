@@ -1,12 +1,9 @@
 {
   "name": "backend-agrisense",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "type": "module",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "nodemon src/server.js",
+    "dev": "concurrently \"npm run server-dev\" \"npm run worker\"",
+    "server-dev": "nodemon src/server.js",
     "worker": "node src/worker.js"
   },
   "keywords": [],
@@ -30,6 +27,7 @@
     "multer-storage-cloudinary": "^4.0.0"
   },
   "devDependencies": {
+    "concurrently": "^8.2.2",
     "nodemon": "^3.1.10"
   }
 }
