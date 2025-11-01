@@ -23,11 +23,11 @@ const generateAccessAndRefreshTokens = async (userId) => {
 };
 // Register Controller
 const registerController = asyncHandler(async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password ,captchaToken } = req.body;
 
  
-  if ([name, email, password].some((field) => !field || field.trim() === "")) {
-    throw new ApiError(400, "All fields (name, email, password) are required");
+  if ([name, email, password].some((field) => !field || field.trim() === "") || !captchaToken) {
+    throw new ApiError(400, "All fields (name, email, password) and Capcha Token are required");
   }
 
  
@@ -242,6 +242,8 @@ const resetPasswordController = asyncHandler(async (req, res) => {
     );
 });
 
+
+// social Login like google and github
 const socialLoginMockController = asyncHandler(async (req, res) => {
   const { email } = req.body;
 

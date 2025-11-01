@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.use(verifyJWT);
 
-router.post("/submit", upload.single('crop_image'), submitInferenceJob); // 'crop_image' is the field name
+router.post("/submit", upload.single('crop_image'), submitInferenceJob); 
 router.get("/status/:imageId",checkJobStatus);
 
 export default router;

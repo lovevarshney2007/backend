@@ -3,7 +3,7 @@ import { Image } from "../models/imageModel.js";
 import { ModelResult } from "../models/modelResult.js"; 
 
 
-export const getDetectionResult = asyncHandler(async (req, res) => {
+ const getDetectionResult = asyncHandler(async (req, res) => {
     const { imageId } = req.params;
 
   
@@ -28,8 +28,8 @@ export const getDetectionResult = asyncHandler(async (req, res) => {
     );
 });
 
-// GET /api/v1/data/yield-forecast 
-export const getYieldForecast = asyncHandler(async (req, res) => {
+
+ const getYieldForecast = asyncHandler(async (req, res) => {
   
     const mockForecastData = [
         { month: "Apr-24", yield_tons: 4.5, temp_C: 35 },
@@ -41,7 +41,39 @@ export const getYieldForecast = asyncHandler(async (req, res) => {
         new ApiResponse(
             200, 
             { farmId: req.query.farmId || "N/A", forecast: mockForecastData },
-            "Yield forecast data fetched successfully (Mock)"
+            "Yield forecast data fetched successfully "
         )
     );
 });
+
+const getAnalyticsSummary = asyncHandler(async (req,res ) => {
+    const { farmId, season } = req.query;
+
+    if(!farmId){
+        throw new ApiError(400, "Farm ID is required for focused analytics.");
+    }
+
+    const mockAnalysicData = {
+        farmId : farmId,
+        total_infections_last_season: 45,
+        current_infection_rate: '8%',
+        most_common_disease: 'Potato Blight',
+        yield_comparison: {
+            current_vs_prev_season: '12% Increase', 
+            current_season_forecast: 5.8 
+    }
+};
+
+return res.status(200).json(
+        new ApiResponse(200, mockAnalysisData, "Farm analytics summary generated.")
+    );
+
+
+})
+
+
+export {
+    getDetectionResult,
+    getYieldForecast,
+    getAnalyticsSummary
+}

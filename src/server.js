@@ -12,9 +12,19 @@ import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
 import { SuspiciousLog } from "./models/suspiciousLogModel.js";
 import dataRoutes from "./routes/dataRoutes.js";
+import { v2 as cloudinary } from "cloudinary";
+import fs from "fs";
 
 //load environment Variables
 dotenv.config();
+
+//  Configuration
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
 
 // connect to mongodb
 connectDb();
@@ -25,8 +35,8 @@ const app = express();
 
 // Rate Limiting
 const limiter = rateLimit({
-    windowMs: 60 * 1000, // 15 minutes
-    max: 5, // Limit each IP to 100 requests per windowMs
+    windowMs: 60 * 1000, 
+    max: 5, 
     standardHeaders: true, 
     legacyHeaders: false,
     message: "Too many requests from this IP, please try again after 15 minutes",
@@ -49,10 +59,11 @@ const limiter = rateLimit({
     },
 });
 // middlewares
-app.use(limiter);
+
 app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
+app.use(limiter);
 app.use(morgan("dev"));
 
 

@@ -12,20 +12,13 @@ const connection = {
 
 connectDb(); 
 
-
 const worker = new Worker('inferenceQueue', async (job) => {
     
     const { imageId, imageUrl } = job.data;
     console.log(`Worker: Starting ML inference for job ${job.id} on image ${imageId}`);
 
+ 
     await new Promise(resolve => setTimeout(resolve, 5000)); 
-
-    const mockResult = {
-        model: "CNN Classifier",
-        predicted_class: "Disease Detected",
-        confidence: 0.95,
-        segmentation_mask_url: "s3://mock/mask_result.png"
-    };
 
     const mockDiseaseResult = {
         disease: "Potato Blight",
@@ -33,15 +26,17 @@ const worker = new Worker('inferenceQueue', async (job) => {
         modelName: "CNN Classifier"
     };
 
+    // ModelResult creation (Linking the result)
     const finalResult = await ModelResult.create({
         image: imageId,
         detectionResult: mockDiseaseResult,
         modelName: mockDiseaseResult.modelName
     });
 
+    // Final Status Update
     await Image.findByIdAndUpdate(imageId, {
         status: 'COMPLETED',
-       inference_result: finalResult._id
+        inference_result: finalResult._id
     });
 
     console.log(`Worker: Job ${job.id} completed. Status updated to COMPLETED.`);

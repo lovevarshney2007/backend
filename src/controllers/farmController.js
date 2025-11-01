@@ -21,6 +21,21 @@ const createFarm = asyncHandler(async(req,res) => {
     );
 });
 
+const getSingleFarm = asyncHandler(async (req,res) => {
+    const {id } = req.params;
+    const farm = await Farm.findOne({
+        _id: id,
+        owner: req.user._id
+    })
+
+    if(!farm){
+        throw new ApiError(404, "Farm is not found .");
+    }
+    return res
+    .status(200)
+    .json(new ApiResponse(200, farm, "Farm details fetched."));
+})
+
 const getAllFarms = asyncHandler(async(req,res) => {
     const  farms = await Farm.find({
         owner : req.user._id

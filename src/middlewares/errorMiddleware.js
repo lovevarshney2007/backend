@@ -6,7 +6,7 @@ const errorMiddleware = (err,req,res,next) => {
 
 
 if(err.code === 11000) {
-    statusCode = 409; // conflict
+    statusCode = 409;
   message = `Duplicate field value entered for ${Object.keys(err.keyValue).join(', ')}`;
 
 }
