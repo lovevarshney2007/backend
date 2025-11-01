@@ -20,6 +20,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Password is required'],
   },
+  confirmPassword:{
+    type: String,
+    require:true
+  },
   role: {
     type: String,
     default: "farmer",

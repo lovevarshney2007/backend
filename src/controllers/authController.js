@@ -23,13 +23,16 @@ const generateAccessAndRefreshTokens = async (userId) => {
 };
 // Register Controller
 const registerController = asyncHandler(async (req, res) => {
-  const { name, email, password ,captchaToken } = req.body;
+  const { name, email, password ,confirmPassword ,captchaToken } = req.body;
 
  
-  if ([name, email, password].some((field) => !field || field.trim() === "") || !captchaToken) {
-    throw new ApiError(400, "All fields (name, email, password) and Capcha Token are required");
+  if ([name, email, password,confirmPassword].some((field) => !field || field.trim() === "") || !captchaToken) {
+    throw new ApiError(400, "All fields (name, email, password,confirmPassword) and Capcha Token are required");
   }
 
+  if (password !== confirmPassword) {
+    throw new ApiError(400, "Password and confirm password do not match.");
+  }
  
   const existingUser = await User.findOne({ email });
   if (existingUser) {
