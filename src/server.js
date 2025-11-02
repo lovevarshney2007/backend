@@ -60,7 +60,28 @@ const limiter = rateLimit({
 });
 // middlewares
 
-app.use(cors());
+// app.use(cors()); 
+
+const allowedOrigins = [
+  process.env.FRONTEND_URL, 
+  "http://localhost:3000", 
+  "http://127.0.0.1:3000"
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Agar request mein origin nahi hai (jaise Postman/same origin), toh allow karein
+    if (!origin) return callback(null, true); 
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true, // Cookies (JWT/Refresh Token) bhejne ke liye zaroori
+}));
+
 app.use(express.json());
 app.use(cookieParser());
 app.use(limiter);

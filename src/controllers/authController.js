@@ -14,7 +14,7 @@ const generateAccessAndRefreshTokens = async (userId) => {
     const refreshToken = user.generateRefreshToken();
 
     user.refreshToken = refreshToken;
-    await user.save({ validateBeforeSave: false }); 
+    await user.save({ validateBeforeSave: false });
 
     return { accessToken, refreshToken };
   } catch (error) {
@@ -25,15 +25,15 @@ const generateAccessAndRefreshTokens = async (userId) => {
 const registerController = asyncHandler(async (req, res) => {
   const { name, email, password ,confirmPassword ,captchaToken } = req.body;
 
- 
+  
   if ([name, email, password,confirmPassword].some((field) => !field || field.trim() === "") || !captchaToken) {
     throw new ApiError(400, "All fields (name, email, password,confirmPassword) and Capcha Token are required");
   }
 
   if (password !== confirmPassword) {
-    throw new ApiError(400, "Password and confirm password do not match.");
-  }
- 
+    throw new ApiError(400, "Password and confirm password do not match.");
+  }
+  
   const existingUser = await User.findOne({ email });
   if (existingUser) {
     throw new ApiError(409, "User Already registered, Please Login");
@@ -130,7 +130,8 @@ const refreshAccessTokenController = asyncHandler(async (req, res) => {
     throw new ApiError(401, "Refresh token is missing");
   }
 
-  const decodedToken = jwt.verify(incomingRefreshToken, process.env.JWT_SECRET);
+  // FIX: jwt.verify -> JWT.verify
+  const decodedToken = JWT.verify(incomingRefreshToken, process.env.JWT_SECRET);
 
   const user = await User.findById(decodedToken?._id).select("+refreshToken");
 

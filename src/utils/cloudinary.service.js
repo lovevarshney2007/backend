@@ -3,7 +3,7 @@ import fs from "fs";
 import { ApiError } from "./utils.js";
 
 
-// 2. Upload Function
+//  Upload Function
 const uploadBufferToCloudinary = async (localFilePath) => {
   try {
     if (!localFilePath) return null;

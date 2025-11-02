@@ -3,10 +3,10 @@ import { Image } from "../models/imageModel.js";
 import { ModelResult } from "../models/modelResult.js"; 
 
 
- const getDetectionResult = asyncHandler(async (req, res) => {
+const getDetectionResult = asyncHandler(async (req, res) => {
     const { imageId } = req.params;
 
-  
+    
     const imageRecord = await Image.findById(imageId)
         .populate('inference_result'); 
 
@@ -29,8 +29,8 @@ import { ModelResult } from "../models/modelResult.js";
 });
 
 
- const getYieldForecast = asyncHandler(async (req, res) => {
-  
+const getYieldForecast = asyncHandler(async (req, res) => {
+    
     const mockForecastData = [
         { month: "Apr-24", yield_tons: 4.5, temp_C: 35 },
         { month: "May-24", yield_tons: 5.2, temp_C: 38 },
@@ -53,7 +53,7 @@ const getAnalyticsSummary = asyncHandler(async (req,res ) => {
         throw new ApiError(400, "Farm ID is required for focused analytics.");
     }
 
-    const mockAnalysicData = {
+    const mockAnalysicData = { // Correctly named variable
         farmId : farmId,
         total_infections_last_season: 45,
         current_infection_rate: '8%',
@@ -61,14 +61,13 @@ const getAnalyticsSummary = asyncHandler(async (req,res ) => {
         yield_comparison: {
             current_vs_prev_season: '12% Increase', 
             current_season_forecast: 5.8 
-    }
-};
-
-return res.status(200).json(
-        new ApiResponse(200, mockAnalysisData, "Farm analytics summary generated.")
+        }
+    };
+    
+    // FIX: Using the correct variable name: mockAnalysicData
+    return res.status(200).json(
+        new ApiResponse(200, mockAnalysicData, "Farm analytics summary generated.")
     );
-
-
 })
 
 
