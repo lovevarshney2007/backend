@@ -3,9 +3,9 @@ import dotenv from "dotenv";
 import cors from "cors";
 import morgan from "morgan";
 import connectDb from "./config/db.js";
-import authRoutes from "./routes/authRoutes.js"
+import authRoutes from "./routes/authRoutes.js";
 import { errorMiddleware } from "./middlewares/errorMiddleware.js";
-import { asyncHandler,ApiError,ApiResponse } from "./utils/utils.js"
+import { asyncHandler, ApiError, ApiResponse } from "./utils/utils.js";
 import farmRoutes from "./routes/farmRoutes.js";
 import inferenceRoutes from "./routes/inferenceRoutes.js";
 import cookieParser from "cookie-parser";
@@ -18,84 +18,81 @@ import fs from "fs";
 //load environment Variables
 dotenv.config();
 
-//  Configuration
+//  Configuration
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-
 // connect to mongodb
 connectDb();
-
 
 // initiallize express app
 const app = express();
 
-// Rate Limiting
+// FIX 1: Render Deployment ke liye zaruri setting
+app.set("trust proxy", 1);
+
+// Rate Limiting (Ab isse sirf jahaan zarurat ho, wahaan apply karenge)
 const limiter = rateLimit({
-    windowMs: 60 * 1000, 
-    max: 5, 
-    standardHeaders: true, 
-    legacyHeaders: false,
-    message: "Too many requests from this IP, please try again after 15 minutes",
+  windowMs: 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: "Too many requests from this IP, please try again after 15 minutes",
 
-    handler: async (req,res,next,options) => {
-        const suspiciousIP = req.ip;
+  handler: async (req, res, next, options) => {
+    const suspiciousIP = req.ip;
 
-      try {
-            await SuspiciousLog.create({
-                ipAddress: suspiciousIP,
-                endpoint: req.originalUrl,
-                reason: "RATE_LIMIT_EXCEEDED",
-            });
-            console.log(`[ALERT] Stored suspicious activity for IP: ${suspiciousIP}`);
-
-        } catch (error) {
-            console.error("Error storing suspicious log:", error.message);
-        }
-        res.status(options.statusCode).send(options.message);
-    },
+    try {
+      await SuspiciousLog.create({
+        ipAddress: suspiciousIP,
+        endpoint: req.originalUrl,
+        reason: "RATE_LIMIT_EXCEEDED",
+      });
+      console.log(`[ALERT] Stored suspicious activity for IP: ${suspiciousIP}`);
+    } catch (error) {
+      console.error("Error storing suspicious log:", error.message);
+    }
+    res.status(options.statusCode).send(options.message);
+  },
 });
+
 // middlewares
 
-// app.use(cors()); 
-
-const allowedOrigins = [
-  process.env.FRONTEND_URL, 
-  "http://localhost:3000", 
-  "http://127.0.0.1:3000"
-];
-
-app.use(cors({
-  origin: "*",  
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-  credentials: true, 
-}));
-
+// FIX 2: CORS * (Testing ke liye)
+app.use(
+  cors({
+    origin: "*", // Warning: Production ke liye unsafe
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(limiter);
+// app.use(limiter); // FIX 3: Global Rate Limiter hata diya gaya
 app.use(morgan("dev"));
 
-
-
 // test routes
-app.get("/",(req,res) => {
-    res.send("Agrisense Backend is running");
-})
+app.get("/", (req, res) => {
+  res.send("Agrisense Backend is running");
+});
 
-app.use("/api/v1/auth",authRoutes)
+// Ab yahaan limter ko authenticated routes par laga sakte hain, jaise:
+// app.use("/api/v1/farms", limiter, farmRoutes);
+// Ya fir use verifyJWT middleware mein hi use karein.
+
+app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/farms", farmRoutes);
 app.use("/api/v1/inference", inferenceRoutes);
 app.use("/api/v1/data", dataRoutes);
 
-app.use(errorMiddleware)
+app.use(errorMiddleware);
 
 // server listening
 const PORT = process.env.PORT || 8000;
-app.listen(PORT , () =>{
-    console.log(`Server running on port ${PORT}`);
-})
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
