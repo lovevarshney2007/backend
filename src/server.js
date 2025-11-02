@@ -69,18 +69,11 @@ const allowedOrigins = [
 ];
 
 app.use(cors({
-  origin: function (origin, callback) {
-    // Agar request mein origin nahi hai (jaise Postman/same origin), toh allow karein
-    if (!origin) return callback(null, true); 
-    if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-      return callback(new Error(msg), false);
-    }
-    return callback(null, true);
-  },
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  credentials: true, // Cookies (JWT/Refresh Token) bhejne ke liye zaroori
+  origin: "*",  
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  credentials: true, 
 }));
+
 
 app.use(express.json());
 app.use(cookieParser());
