@@ -13,13 +13,13 @@ const uploadBufferToCloudinary = async (localFilePath) => {
       folder: "agrisense_images",
     });
 
-    fs.unlinkSync(localFilePath);
+    // fs.unlinkSync(localFilePath);
 
     return response;
   } catch (error) {
     console.error("Cloudinary upload failed (Key/Network Error):", error);
 
-    if (localFilePath) fs.unlinkSync(localFilePath);
+    // if (localFilePath) fs.unlinkSync(localFilePath);
 
     throw new ApiError(
       500,

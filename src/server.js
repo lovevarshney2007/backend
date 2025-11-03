@@ -31,10 +31,10 @@ connectDb();
 // initiallize express app
 const app = express();
 
-// FIX 1: Render Deployment ke liye zaruri setting
+
 app.set("trust proxy", 1);
 
-// Rate Limiting (Ab isse sirf jahaan zarurat ho, wahaan apply karenge)
+// Rate Limiting 
 const limiter = rateLimit({
   windowMs: 60 * 1000,
   max: 5,
@@ -64,7 +64,7 @@ const limiter = rateLimit({
 // FIX 2: CORS * (Testing ke liye)
 app.use(
   cors({
-    origin: "*", // Warning: Production ke liye unsafe
+    origin: "*", 
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     credentials: true,
   })
@@ -72,7 +72,7 @@ app.use(
 
 app.use(express.json());
 app.use(cookieParser());
-// app.use(limiter); // FIX 3: Global Rate Limiter hata diya gaya
+// app.use(limiter); 
 app.use(morgan("dev"));
 
 // test routes
@@ -80,9 +80,7 @@ app.get("/", (req, res) => {
   res.send("Agrisense Backend is running");
 });
 
-// Ab yahaan limter ko authenticated routes par laga sakte hain, jaise:
-// app.use("/api/v1/farms", limiter, farmRoutes);
-// Ya fir use verifyJWT middleware mein hi use karein.
+
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/farms", farmRoutes);

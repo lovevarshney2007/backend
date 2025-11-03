@@ -23,11 +23,11 @@ const generateAccessAndRefreshTokens = async (userId) => {
 };
 // Register Controller
 const registerController = asyncHandler(async (req, res) => {
-  const { name, email, password ,confirmPassword ,captchaToken } = req.body;
+  const { name, email, password ,confirmPassword } = req.body;
 
   
-  if ([name, email, password,confirmPassword].some((field) => !field || field.trim() === "") || !captchaToken) {
-    throw new ApiError(400, "All fields (name, email, password,confirmPassword) and Capcha Token are required");
+  if ([name, email, password,confirmPassword].some((field) => !field || field.trim() === "")) {
+    throw new ApiError(400, "All fields (name, email, password,confirmPassword) are required");
   }
 
   if (password !== confirmPassword) {
