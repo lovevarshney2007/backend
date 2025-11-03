@@ -76,7 +76,7 @@ export const submitInferenceJob = asyncHandler(async (req, res) => {
     const diseaseResp = await axios.post(
       CROP_API,
       { image_path: plantUrl },
-      { headers: { "Content-Type": "application/json" }, timeout: 60000 }
+      { headers: { "Content-Type": "application/json" }, timeout: 600 }
     );
 
     detectionResult.disease = diseaseResp.data;
