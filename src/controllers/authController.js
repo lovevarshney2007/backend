@@ -56,53 +56,81 @@ const registerController = asyncHandler(async (req, res) => {
     .json(new ApiResponse(201, createdUser, "User registered successfully"));
 });
 
-// Login controller
+
+
+//  Login controller 
 const loginController = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
+  try {
+    
+    const existingToken = req.cookies?.accessToken;
 
-  if (!email || !password) {
-    throw new ApiError(400, "Email And Password Are Required");
-  }
+    if (existingToken) {
+      try {
+        const decoded = JWT.verify(existingToken, process.env.JWT_SECRET);
+        if (decoded && decoded._id) {
+          return res.status(200).json(
+            new ApiResponse(
+              200,
+              { userId: decoded._id },
+              "User already logged in."
+            )
+          );
+        }
+      } catch (error) {
+        
+      }
+    }
 
-  
-  const user = await User.findOne({ email }).select("+password +refreshToken");
-  if (!user) {
-    throw new ApiError(404, "User does not exist");
-  }
+   
+    const { email, password } = req.body;
 
-  const isPasswordValid = await user.isPasswordCorrect(password);
-  if (!isPasswordValid) {
-    throw new ApiError(401, "Invalid user credentials");
-  }
+    if (!email || !password) {
+      throw new ApiError(400, "Email and Password are required");
+    }
 
-  const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
-    user._id
-  );
+    const user = await User.findOne({ email }).select("+password +refreshToken");
+    if (!user) {
+      throw new ApiError(404, "User does not exist");
+    }
 
-  const loggedInUser = await User.findById(user._id).select(
-    "-password -refreshToken"
-  );
+    const isPasswordValid = await user.isPasswordCorrect(password);
+    if (!isPasswordValid) {
+      throw new ApiError(401, "Invalid user credentials");
+    }
 
-  const options = {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-  };
-
-  return res
-    .status(200)
-    .cookie("accessToken", accessToken, options)
-    .cookie("refreshToken", refreshToken, options)
-    .json(
-      new ApiResponse(
-        200,
-        {
-          user: loggedInUser,
-          accessToken, 
-        },
-        "User logged in Successfully"
-      )
+    const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
+      user._id
     );
+
+    const loggedInUser = await User.findById(user._id).select(
+      "-password -refreshToken"
+    );
+
+    const options = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+    };
+
+    return res
+      .status(200)
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", refreshToken, options)
+      .json(
+        new ApiResponse(
+          200,
+          {
+            user: loggedInUser,
+            accessToken,
+          },
+          "User logged in successfully"
+        )
+      );
+  } catch (error) {
+    console.error("Login Error:", error);
+    throw new ApiError(500, "Login failed: " + error.message);
+  }
 });
+
 
 // Logout Controller
 const logoutController = asyncHandler(async (req, res) => {
