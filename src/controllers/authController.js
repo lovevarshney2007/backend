@@ -60,10 +60,8 @@ const registerController = asyncHandler(async (req, res) => {
 
 //  Login controller 
 const loginController = asyncHandler(async (req, res) => {
-  try {
-    
+  try { 
     const existingToken = req.cookies?.accessToken;
-
     if (existingToken) {
       try {
         const decoded = JWT.verify(existingToken, process.env.JWT_SECRET);
