@@ -32,6 +32,11 @@ const registerController = asyncHandler(async (req, res) => {
     throw new ApiError(400, "All fields (name, email, password,confirmPassword) are required");
   }
 
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  if (!emailRegex.test(email)) {
+    throw new ApiError(400, "Invalid email format");
+  }
+
   if (password !== confirmPassword) {
     throw new ApiError(400, "Password and confirm password do not match.");
   }
@@ -40,6 +45,13 @@ const registerController = asyncHandler(async (req, res) => {
   if (existingUser) {
     throw new ApiError(409, "User Already registered, Please Login");
   }
+
+   const allowedDomains = ["gmail.com", "yahoo.com", "outlook.com", "hotmail.com"];
+  const userDomain = email.split("@")[1];
+  if (!allowedDomains.includes(userDomain)) {
+    throw new ApiError(400, "Please use a valid email domain (e.g., Gmail, Yahoo, Outlook)");
+  }
+
 
   const user = await User.create({ name, email, password });
   const createdUser = await User.findById(user._id).select(
