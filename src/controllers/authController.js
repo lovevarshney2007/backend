@@ -116,15 +116,17 @@ const loginController = asyncHandler(async (req, res) => {
       "-password -refreshToken"
     );
 
-    const options = {
+    const cookieOptions  = {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
+      sameSite: "None",
+       maxAge: 7 * 24 * 60 * 60 * 1000,
     };
 
     return res
       .status(200)
-      .cookie("accessToken", accessToken, options)
-      .cookie("refreshToken", refreshToken, options)
+      .cookie("accessToken", accessToken, cookieOptions )
+      .cookie("refreshToken", refreshToken, cookieOptions )
       .json(
         new ApiResponse(
           200,
@@ -149,15 +151,17 @@ const logoutController = asyncHandler(async (req, res) => {
     $set: { refreshToken: undefined },
   });
 
-  const options = {
+  const cookieOptions  = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
+    sameSite: "None",
+       maxAge: 7 * 24 * 60 * 60 * 1000,
   };
 
   return res
     .status(200)
-    .clearCookie("accessToken", options)
-    .clearCookie("refreshToken", options)
+    .clearCookie("accessToken", cookieOptions )
+    .clearCookie("refreshToken", cookieOptions )
     .json(new ApiResponse(200, {}, "User logged out successfully"));
 });
 
@@ -183,15 +187,17 @@ const refreshAccessTokenController = asyncHandler(async (req, res) => {
   const { accessToken, refreshToken: newRefreshToken } =
     await generateAccessAndRefreshTokens(user._id);
 
-  const options = {
+  const cookieOptions  = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
+    sameSite: "None",
+       maxAge: 7 * 24 * 60 * 60 * 1000,
   };
 
   return res
     .status(200)
-    .cookie("accessToken", accessToken, options)
-    .cookie("refreshToken", newRefreshToken, options)
+    .cookie("accessToken", accessToken, cookieOptions )
+    .cookie("refreshToken", newRefreshToken, cookieOptions )
     .json(
       new ApiResponse(
         200,
@@ -290,15 +296,15 @@ const resetPasswordController = asyncHandler(async (req, res) => {
   const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
     user._id
   );
-  const options = {
+  const cookieOptions  = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
   };
 
   return res
     .status(200)
-    .cookie("accessToken", accessToken, options)
-    .cookie("refreshToken", refreshToken, options)
+    .cookie("accessToken", accessToken, cookieOptions )
+    .cookie("refreshToken", refreshToken, cookieOptions )
     .json(
       new ApiResponse(
         200,
@@ -336,15 +342,17 @@ const socialLoginMockController = asyncHandler(async (req, res) => {
   const loggedInUser = await User.findById(user._id).select(
     "-password -refreshToken"
   );
-  const options = {
+  const cookieOptions  = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
+    sameSite: "None",
+       maxAge: 7 * 24 * 60 * 60 * 1000,
   };
 
   return res
     .status(200)
-    .cookie("accessToken", accessToken, options)
-    .cookie("refreshToken", refreshToken, options)
+    .cookie("accessToken", accessToken, cookieOptions )
+    .cookie("refreshToken", refreshToken, cookieOptions )
     .json(
       new ApiResponse(
         200,

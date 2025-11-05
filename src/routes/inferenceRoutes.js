@@ -47,7 +47,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 
-router.post("/disease", upload.single("plant_image"), async (req, res) => {
+router.post("/disease", upload.single("image"), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: "No file uploaded" });
 
@@ -111,12 +111,12 @@ router.post(
       const plantPath = path.join(uploadPath, plantFile.filename);
       const maskPath = path.join(uploadPath, maskFile.filename);
 
-      // ✅ Create form-data to send both files to the external UNet API
+      //  Create form-data to send both files to the external UNet API
       const form = new FormData();
       form.append("plant_image", fs.createReadStream(plantPath));
       form.append("mask_image", fs.createReadStream(maskPath));
 
-      // ✅ Send request to external ML API
+      //  Send request to external ML API
       const response = await fetch("https://unet-model-deployement.onrender.com/predict", {
         method: "POST",
         body: form,
@@ -125,14 +125,14 @@ router.post(
 
       const result = await response.json();
 
-      // ✅ Delete local files after sending
+      //  Delete local files after sending
       [plantPath, maskPath].forEach((filePath) => {
         fs.unlink(filePath, (err) => {
           if (err) console.error("Error deleting file:", err);
         });
       });
 
-      // ✅ Send result back to frontend
+      //  Send result back to frontend
       res.status(200).json({
         success: true,
         message: "Both images sent to UNet model successfully.",

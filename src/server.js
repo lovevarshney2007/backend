@@ -57,7 +57,12 @@ const limiter = rateLimit({
 
 app.use(
   cors({
-    origin: "*", 
+    origin: [
+      "http://localhost:3000",
+      "https://agrisense-app-fawn.vercel.app/",
+      "https://your-app-domain.com",
+
+    ],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     credentials: true,
   })
@@ -70,7 +75,7 @@ app.use(morgan("dev"));
 
 
 app.get("/", (req, res) => {
-  res.send("🌾 AgriSense Backend (2025) is running successfully!");
+  res.send(" AgriSense Backend (2025) is running successfully!");
 });
 
 //  API Routes
