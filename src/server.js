@@ -59,7 +59,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:3000",
-      "https://agrisense-app-fawn.vercel.app/",
+      "https://agrisense-app-fawn.vercel.app",
       "https://your-app-domain.com",
 
     ],
