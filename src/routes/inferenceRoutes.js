@@ -65,7 +65,10 @@ router.post("/disease", upload.single("image"), async (req, res) => {
       method: "POST",
       body: form,
       headers: form.getHeaders(),
+      signal: controller.signal,
     });
+
+    clearTimeout(timeout);
 
     const result = await response.json();
 
