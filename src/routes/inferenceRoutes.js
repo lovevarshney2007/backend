@@ -30,8 +30,8 @@ const upload = multer({ storage });
 //  Utility function to delete local files
 const deleteFile = (filePath) => {
   fs.unlink(filePath, (err) => {
-    if (err) console.error("❌ Error deleting file:", err);
-    else console.log("🗑️ File deleted successfully:", filePath);
+    if (err) console.error(" Error deleting file:", err);
+    else console.log(" File deleted successfully:", filePath);
   });
 };
 
@@ -39,7 +39,7 @@ router.post("/disease", upload.single("image"), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: "No file uploaded" });
 
-    console.log("🖼️ File uploaded:", req.file.filename);
+    console.log(" File uploaded:", req.file.filename);
     const localFilePath = path.join(uploadPath, req.file.filename);
 
     //  Create FormData to send to ML model
@@ -72,7 +72,7 @@ router.post("/disease", upload.single("image"), async (req, res) => {
       apiResponse: result,
     });
   } catch (error) {
-    console.error("❌ Error in /disease route:", error);
+    console.error(" Error in /disease route:", error);
     return res.status(500).json({
       success: false,
       error: error.message,
@@ -95,7 +95,7 @@ router.post(
       if (!plantFile || !maskFile)
         return res.status(400).json({ error: "Both plant_image and mask_image are required" });
 
-      console.log("🧩 Segment files received:", plantFile.filename, maskFile.filename);
+      console.log(" Segment files received:", plantFile.filename, maskFile.filename);
 
       const plantPath = path.join(uploadPath, plantFile.filename);
       const maskPath = path.join(uploadPath, maskFile.filename);
@@ -104,7 +104,7 @@ router.post(
       form.append("plant_image", fs.createReadStream(plantPath));
       form.append("mask_image", fs.createReadStream(maskPath));
 
-      console.log("🚀 Sending both files to UNet model API...");
+      console.log(" Sending both files to UNet model API...");
 
       const response = await fetch("https://unet-model-deployement.onrender.com/predict", {
         method: "POST",
@@ -124,7 +124,7 @@ router.post(
         apiResponse: result,
       });
     } catch (error) {
-      console.error("❌ Error in /segment route:", error);
+      console.error(" Error in segment route:", error);
       return res.status(500).json({ success: false, error: error.message });
     }
   }
