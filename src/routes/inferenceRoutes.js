@@ -133,16 +133,34 @@ router.post(
 
 router.post("/yield", async (req, res) => {
   try {
-    const {
-      crop_type = "Cabbage",
-      disease_class = "Healthy",
-      ndvi = 0.75,
-      weather = "Warm",
-      historical_yield = 95.5,
-      healthy_area = 0.65,
-      weed_area = 0.20,
-      soil_area = 0.15,
+   const {
+      crop_type,
+      disease_class,
+      ndvi,
+      weather,
+      historical_yield,
+      healthy_area,
+      weed_area,
+      soil_area,
     } = req.body;
+
+    
+    if (
+      !crop_type ||
+      !disease_class ||
+      ndvi === undefined ||
+      !weather ||
+      historical_yield === undefined ||
+      healthy_area === undefined ||
+      weed_area === undefined ||
+      soil_area === undefined
+    ) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "All fields are required: crop_type, disease_class, ndvi, weather, historical_yield, healthy_area, weed_area, soil_area",
+      });
+    }
 
     const payload = {
       crop_type,
