@@ -40,7 +40,15 @@ const registerController = asyncHandler(async (req, res) => {
   if (password !== confirmPassword) {
     throw new ApiError(400, "Password and confirm password do not match.");
   }
-  
+
+ const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,}$/;
+    if (!passwordRegex.test(password)) {
+        throw new ApiError(
+            400, 
+            "Password must be at least 8 characters long and include: at least one lowercase letter, one uppercase letter, one number, and one special character (!@#$%^&*()_+)."
+        );
+    }
+    
   const existingUser = await User.findOne({ email });
   if (existingUser) {
     throw new ApiError(409, "User Already registered, Please Login");
